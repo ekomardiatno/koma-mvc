@@ -27,24 +27,14 @@ class PermissionController extends AuthController
       $user_group = $db->select('user_group_access,user_group_modify,user_group_publish', ['where' => $params_group], 'RESULT_ARRAY');
       if(!$user_group['status']) return printf($user_group['error_msg']);
       $user_group = $user_group['data'];
-      $user_group_access = array_map(function($a) {
-        $arr = unserialize($a['user_group_access']);
-        for($i = 0;$i < count($arr); $i++) {
-          return $arr[$i];
-        }
-      }, $user_group);
-      $user_group_modify = array_map(function($a) {
-        $arr = unserialize($a['user_group_modify']);
-        for($i = 0;$i < count($arr); $i++) {
-          return $arr[$i];
-        }
-      }, $user_group);
-      $user_group_publish = array_map(function($a) {
-        $arr = unserialize($a['user_group_publish']);
-        for($i = 0;$i < count($arr); $i++) {
-          return $arr[$i];
-        }
-      }, $user_group);
+      $user_group_access = [];
+      $user_group_modify = [];
+      $user_group_publish = [];
+      foreach($user_group as $g) {
+        $user_group_access = array_merge($user_group_access, unserialize($g['user_group_access']));
+        $user_group_modify = array_merge($user_group_modify, unserialize($g['user_group_modify']));
+        $user_group_publish = array_merge($user_group_publish, unserialize($g['user_group_publish']));
+      }
       $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
       $class_name = get_class($this);
       $reflector = new \ReflectionClass($class_name);

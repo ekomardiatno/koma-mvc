@@ -188,9 +188,9 @@
         <div class="card-body">
           <div class="form-group mb-0">
             <label class="form-control-label">Grup pengguna</label>
-            <div>
+            <div class="d-flex flex-wrap mx--2 mb--3">
               <?php foreach ($data['user_group'] as $i => $u) : ?>
-                <div class="custom-control custom-checkbox mb-3">
+                <div class="custom-control custom-checkbox mb-3 mx-2">
                   <input type="checkbox" class="custom-control-input" name="user_groups[]" value="<?= $u['user_group_id'] ?>" id="user_groups_<?= $i ?>">
                   <label class="custom-control-label" for="user_groups_<?= $i ?>"><?= $u['user_group_name'] ?></label>
                 </div>
