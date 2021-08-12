@@ -2,7 +2,6 @@
 namespace App\Libraries;
 use App\Libraries\AuthController;
 use App\Helpers\Auth;
-use App\Wrapper\Database;
 
 class PermissionController extends AuthController
 {
@@ -11,30 +10,10 @@ class PermissionController extends AuthController
   {
     parent::__construct();
     if(Auth::user('user_groups')) {
-      for ($i = 0; $i < count(Auth::user('user_groups')); $i++) :
-        $params_group[] = [
-          'column' => 'user_group_id',
-          'value' => Auth::user('user_groups')[$i],
-          'conjunction' => $i === count(Auth::user('user_groups')) - 1 ? 'AND' : 'OR'
-        ];
-      endfor;
-      $params_group[] = [
-        'column' => 'status',
-        'value' => 1
-      ];
-      $db = Database::getInstance();
-      $db->table('core_user_group');
-      $user_group = $db->select('user_group_access,user_group_modify,user_group_publish', ['where' => $params_group], 'RESULT_ARRAY');
-      if(!$user_group['status']) return printf($user_group['error_msg']);
-      $user_group = $user_group['data'];
-      $user_group_access = [];
-      $user_group_modify = [];
-      $user_group_publish = [];
-      foreach($user_group as $g) {
-        $user_group_access = array_merge($user_group_access, unserialize($g['user_group_access']));
-        $user_group_modify = array_merge($user_group_modify, unserialize($g['user_group_modify']));
-        $user_group_publish = array_merge($user_group_publish, unserialize($g['user_group_publish']));
-      }
+      $user_m = $this->model('UserGroup');
+      $user_groups = $user_m->group_user_loggedin();
+      echo json_encode($user_groups); die;
+      extract($user_groups);
       $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
       $class_name = get_class($this);
       $reflector = new \ReflectionClass($class_name);
