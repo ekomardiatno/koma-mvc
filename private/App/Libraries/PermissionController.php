@@ -12,7 +12,6 @@ class PermissionController extends AuthController
     if(Auth::user('user_groups')) {
       $user_m = $this->model('UserGroup');
       $user_groups = $user_m->group_user_loggedin();
-      echo json_encode($user_groups); die;
       extract($user_groups);
       $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
       $class_name = get_class($this);
