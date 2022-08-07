@@ -9,6 +9,9 @@
 
 namespace App\Wrapper;
 
+use PDO;
+use PDOException;
+
 class Database
 {
 
@@ -23,6 +26,17 @@ class Database
 
         if (mysqli_connect_errno()) {
             echo "Failed to connect to MySQL: " . mysqli_connect_error();
+        }
+    }
+
+    public static function getPDOInstance()
+    {
+        $dsn = "mysql:host=" . getenv('DB_HOST') . ";dbname=" . getenv('DB_DATABASE') . ";charset=UTF8";
+        try {
+            $conn = new PDO($dsn, getenv('DB_USERNAME'), getenv('DB_PASSWORD'), [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+            return $conn;
+        } catch (PDOException $e) {
+            echo $e->getMessage();
         }
     }
 
@@ -81,8 +95,8 @@ class Database
         }
 
         $sql = substr($sql, 0, -1) . ' FROM ' . $table;
-        
-        
+
+
         $sql = $this->where($where, $sql);
 
         $data = $this->fetch($sql, $fetch);
@@ -315,7 +329,7 @@ class Database
 
         $data = [];
         $query = $this->mysqli->query($sql);
-        if(!$query) {
+        if (!$query) {
             return ['status' => false, 'error_msg' => $this->mysqli->error, 'error_code' => $this->mysqli->errno];
         }
         switch ($fetch) {
